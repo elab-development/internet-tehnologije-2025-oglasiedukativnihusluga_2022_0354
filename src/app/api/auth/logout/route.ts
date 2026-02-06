@@ -2,16 +2,21 @@ import { AUTH_COOKIE } from "@/lib/auth";
 import { NextResponse } from "next/server";
 
 export async function POST() {
-    const res = NextResponse.json({ ok: true })
+  try {
+    const res = NextResponse.json({ ok: true }, { status: 200 });
 
+    // Brišemo cookie
     res.cookies.set(AUTH_COOKIE, "", {
-        httpOnly: true,
-        sameSite: "lax" as const,
-        secure: process.env.NODE_ENV === "production",
-        path: "/",
-        maxAge: 0,
-        expires: new Date(0) // istekao 01.01.1970. browser ga sam brise
-    })
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      maxAge: 0, // cookie odmah isteče
+    });
 
     return res;
+  } catch (err) {
+    console.error("Logout failed:", err);
+    return NextResponse.json({ error: "Logout failed" }, { status: 500 });
+  }
 }
