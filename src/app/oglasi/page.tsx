@@ -3,6 +3,8 @@ import { db } from "@/db";
 import { eq } from "drizzle-orm";
 import OglasCard from "../components/OglasCard";
 import OglasiSidebar from "../components/SideBar";
+import LogoutButton from "../components/LogoutButton";
+
 
 export default async function OglasiPage(){
         const subjects = await db
@@ -28,7 +30,9 @@ export default async function OglasiPage(){
 
   return (
     <main style={{ padding: 24, maxWidth: 1400, margin: "0 auto 0 0" }}>
-     
+     <div className="flex justify-end mb-4">
+        <LogoutButton />
+      </div>
      <div className="mt-4 flex flex-col gap-6 md:flex-row">
         <OglasiSidebar subjects={subjects} />
 
