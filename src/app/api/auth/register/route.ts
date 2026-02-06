@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { korisnik } from "@/db/schema";
 import bcrypt from "bcryptjs";
+import { eq } from "drizzle-orm";
 
 type Body = {
   ime: string;
@@ -20,7 +21,7 @@ export async function POST(req: Request) {
 
   // 2. Provera duplikata
   const existing = await db.query.korisnik.findFirst({
-    where: { email: body.email },
+    where: eq(korisnik.email, body.email ),
     columns: { id: true },
   });
 

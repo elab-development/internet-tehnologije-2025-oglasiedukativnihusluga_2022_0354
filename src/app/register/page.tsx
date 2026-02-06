@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 type RegisterResponse = {
   id: number;
@@ -11,6 +12,28 @@ type RegisterResponse = {
   role: "KORISNIK" | "TUTOR";
 };
 
+// Jednostavan toast komponent
+function Toast({
+  message,
+  duration = 2000,
+  onClose,
+}: {
+  message: string;
+  duration?: number;
+  onClose?: () => void;
+}) {
+  useEffect(() => {
+    const timer = setTimeout(() => onClose?.(), duration);
+    return () => clearTimeout(timer);
+  }, [duration, onClose]);
+
+  return (
+    <div className="fixed top-4 right-4 bg-green-600 text-white p-3 rounded shadow-lg animate-fade-in animate-fade-out">
+      {message}
+    </div>
+  );
+}
+
 export default function RegisterPage() {
   const router = useRouter();
   const [ime, setIme] = useState("");
@@ -19,23 +42,19 @@ export default function RegisterPage() {
   const [lozinka, setLozinka] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [toast, setToast] = useState<string | null>(null);
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    setToast(null);
 
     try {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ime,
-          prezime,
-          email,
-          lozinka,
-          role: "KORISNIK", // standardna registracija
-        }),
+        body: JSON.stringify({ ime, prezime, email, lozinka }),
       });
 
       if (!res.ok) {
@@ -48,7 +67,11 @@ export default function RegisterPage() {
       const data: RegisterResponse = await res.json();
       console.log("Registered user:", data);
 
-      router.push("/dashboard");
+      // Prikaz toast-a
+      setToast("Uspešno ste se registrovali! Bićete preusmereni na login...");
+
+      // Automatski redirect posle 2 sekunde
+      setTimeout(() => router.push("/login"), 2000);
     } catch (err) {
       console.error(err);
       setError("Došlo je do greške pri povezivanju sa serverom.");
@@ -60,9 +83,12 @@ export default function RegisterPage() {
   return (
     <div className="max-w-md mx-auto mt-20 p-6 bg-white shadow-md rounded-lg">
       <h1 className="text-2xl font-bold mb-4">Registracija</h1>
+
       {error && (
         <div className="mb-4 p-2 bg-red-100 text-red-700 rounded">{error}</div>
       )}
+
+      {toast && <Toast message={toast} onClose={() => setToast(null)} />}
 
       <form onSubmit={handleRegister} className="flex flex-col gap-4">
         <input
