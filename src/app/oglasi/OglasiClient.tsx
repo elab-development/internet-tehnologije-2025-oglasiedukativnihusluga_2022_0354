@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import OglasiSidebar from "../components/OglasiSideBar";
 import OglasCard from "../components/OglasCard";
 import { useSearchParams } from "next/navigation";
+import Modal from "../components/Modal";
 
 type OglasRow = {
   id: number;
@@ -24,12 +25,12 @@ export default function OglasiClient() {
   const [oglasi, setOglasi] = useState<OglasRow[]>([]);
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selected, setSelected] = useState<OglasRow | null>(null);
 
   const predmet = sp.get("predmet");
   const nacin = sp.get("nacin");
   const lokacija = sp.get("lokacija");
 
-  // Funkcija za dohvat oglasa sa backend filterima
   const fetchOglasi = async () => {
     setLoading(true);
 
@@ -44,7 +45,11 @@ export default function OglasiClient() {
         fetch("/api/predmeti"),
       ]);
 
-      const [ogl, subj] = await Promise.all([oglRes.json(), subjRes.json()]);
+      const [ogl, subj] = await Promise.all([
+        oglRes.json(),
+        subjRes.json(),
+      ]);
+
       setOglasi(ogl);
       setSubjects(subj);
     } catch (e) {
@@ -54,7 +59,6 @@ export default function OglasiClient() {
     }
   };
 
-  // useEffect poziva svaki put kada se promene filteri
   useEffect(() => {
     fetchOglasi();
   }, [predmet, nacin, lokacija]);
@@ -69,19 +73,56 @@ export default function OglasiClient() {
         <main className="flex-1">
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {oglasi.map((o) => (
-              <OglasCard
+              <div
                 key={o.id}
-                id={o.id}
-                ime={`${o.ime} ${o.prezime}`}
-                predmet={o.predmet}
-                opis={o.opis}
-                lokacija={o.lokacija}
-                cena={o.cena}
-              />
+                role="button"
+                tabIndex={0}
+                className="cursor-pointer"
+                onClickCapture={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setSelected(o);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setSelected(o);
+                  }
+                }}
+              >
+                <OglasCard
+                  id={o.id}
+                  ime={`${o.ime} ${o.prezime}`}
+                  predmet={o.predmet}
+                  opis={o.opis}
+                  lokacija={o.lokacija}
+                  cena={o.cena}
+                />
+              </div>
             ))}
           </div>
         </main>
       </div>
+
+      <Modal open={!!selected} onClose={() => setSelected(null)}>
+        {selected && (
+          <div className="space-y-2">
+            <h2 className="text-xl font-bold">{selected.predmet}</h2>
+            {selected.opis && <p>{selected.opis}</p>}
+            <p>
+              <b>Cena:</b> {selected.cena}
+            </p>
+            <p>
+              <b>Lokacija:</b>{" "}
+              {selected.lokacija ?? "Nije navedeno"}
+            </p>
+            <p>
+              <b>Način:</b> {selected.nacin}
+            </p>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 }
