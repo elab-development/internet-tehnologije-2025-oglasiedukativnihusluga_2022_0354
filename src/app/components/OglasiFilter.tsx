@@ -8,7 +8,7 @@ export default function OglasiFilter({
 }:{
    initial:{
     predmet?:string;
-    mesto?:string;
+    lokacija?:string;
     minCena?:string,
     maxCena?:string;
     nacin?:string;
@@ -18,7 +18,7 @@ export default function OglasiFilter({
     const sp=useSearchParams();
     
     const [predmet,setPredmet]=useState(initial.predmet ?? "");
-    const [mesto,setMesto]=useState(initial.mesto ?? "");
+    const [lokacija,setLokacija]=useState(initial.lokacija ?? "");
     const [minCena, setMinCena] = useState(initial.minCena ?? "");
     const [maxCena, setMaxCena] = useState(initial.maxCena ?? "");
     const [nacin, setNacin] = useState(initial.nacin ?? "");
@@ -32,7 +32,7 @@ export default function OglasiFilter({
     };
 
     setOrDelete("predmet", predmet);
-    setOrDelete("mesto", mesto);
+    setOrDelete("lokacija", lokacija);
     setOrDelete("minCena", minCena);
     setOrDelete("maxCena", maxCena);
     setOrDelete("nacin", nacin);
@@ -48,13 +48,13 @@ export default function OglasiFilter({
     <div style={{ border: "1px solid #eee", borderRadius: 12, padding: 16 }}>
       <div style={{ display: "grid", gap: 10 }}>
         <label>
-          Predmet (slug)
+          Predmet
           <input value={predmet} onChange={(e) => setPredmet(e.target.value)} />
         </label>
 
         <label>
           Mesto
-          <input value={mesto} onChange={(e) => setMesto(e.target.value)} />
+          <input value={lokacija} onChange={(e) => setLokacija(e.target.value)} />
         </label>
 
         <label>

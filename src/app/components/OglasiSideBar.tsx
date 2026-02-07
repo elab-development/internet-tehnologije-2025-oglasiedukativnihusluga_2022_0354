@@ -15,8 +15,8 @@ export default function OglasiSidebar({ subjects }: Props) {
   const router = useRouter();
   const sp = useSearchParams();
 
-  const predmet = sp.get("predmet"); // slug ili null
-  const nacin = sp.get("nacin"); // ONLINE | UZIVO | OBA | null
+  const predmet = sp.get("predmet"); 
+  const nacin = sp.get("nacin"); 
   const lokacija = sp.get("lokacija") ?? "";
 
   function setParam(key: string, value: string | null) {
@@ -29,14 +29,22 @@ export default function OglasiSidebar({ subjects }: Props) {
 
   return (
     <aside className="w-full md:w-72 shrink-0 mr-6 -ml-4">
-      <div className="flex flex-col gap-4 md:sticky md:top-24">
+      <div  style={{
+        background: "rgba(255,255,255,0.92)",
+        border: "1px solid rgba(15, 23, 42, 0.10)",
+        borderRadius: 16,
+        padding: 16,
+        boxShadow: "0 10px 30px rgba(0,0,0,0.12)",
+        backdropFilter: "blur(6px)",
+      }}
+      className="md:sticky md:top-24">
         {/* Lokacija search */}
         <input
           type="text"
           placeholder="Mesto (npr. Beograd)"
           className="w-full rounded border border-gray-200 px-3 py-2"
           value={lokacija}
-          onChange={(e) => setParam("lokacija", e.target.value.trim() || null)}
+          onChange={(e) => setParam("lokacija", e.target.value || null)}
         />
 
         {/* Predmeti */}

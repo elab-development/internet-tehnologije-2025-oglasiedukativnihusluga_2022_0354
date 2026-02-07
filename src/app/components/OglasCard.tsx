@@ -23,16 +23,7 @@ export default function OglasCard({id,ime,predmet,opis,lokacija,cena}:Props){
             background:"white"
         }}>
             <div style={{padding:16,minHeight:220}}>
-              {/*   <div style={{
-                    display:"inline-block",
-                    background:"#facc15",
-                    color:"#111827",
-                    fontWeight:700,
-                    fontSize:12,
-                    padding:"4px 10px",
-                    borderRadius:999,
-                }}>Premium
-                </div> */}
+            
                 <div style={{marginTop:14, fontSize:28, fontWeight:800}}>{ime}</div>
                 <div style={{marginTop:6,opacity:0.8, fontWeight:600}}>{predmet}</div>
                 <div style={{marginTop:10, opacity:0.8, lineHeight:1.5}}>{opis ?? "-"}</div>
