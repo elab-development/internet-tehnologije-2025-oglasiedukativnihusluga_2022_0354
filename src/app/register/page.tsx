@@ -63,9 +63,13 @@ export default function RegisterPage() {
         setLoading(false);
         return;
       }
-
+      
+      // Uspešna registracija
       const data: RegisterResponse = await res.json();
       console.log("Registered user:", data);
+      
+      // Preusmeri na login stranu odmah
+      router.push("/login");
 
       // Prikaz toast-a
       setToast("Uspešno ste se registrovali! Bićete preusmereni na login...");

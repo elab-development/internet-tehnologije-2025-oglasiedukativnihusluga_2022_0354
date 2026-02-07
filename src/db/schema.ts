@@ -1,6 +1,7 @@
 import {
-  pgTable, boolean,serial, varchar, timestamp, integer, numeric, text, pgEnum, unique, primaryKey
+  pgTable, boolean,serial, varchar, timestamp, integer, numeric, text, pgEnum, unique, check, primaryKey
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 
 export const ulogaEnum=pgEnum("uloga",["ADMIN","KORISNIK","TUTOR"]);
 export const reportStatusEnum=pgEnum("report_status",["OPEN","RESOLVED","REJECTED"]);
@@ -24,7 +25,12 @@ export const tutor=pgTable("tutor",{
     godineIskustva: integer("godineIskustva").notNull().default(0),
     lokacija:varchar("lokacija",{length:120}),
     telefon: varchar("telefon", {length: 50}),
-})
+},
+ (table) => ({
+    telefonUnique: unique("telefon_unique").on(table.telefon),
+  })
+
+)
 
 
 export const predmet=pgTable("predmet",{
@@ -43,7 +49,11 @@ export const oglas=pgTable("oglas",{
     cena:numeric("cena",{precision:10, scale: 2}).notNull(),
     datumKreiranja:timestamp("datumKreiranja").defaultNow(),
     odobren:boolean("odobren").notNull().default(false) //0 nije 1 jeste
-})
+},
+ (table) => [
+    check("age_check1", sql`${table.cena} > 0`),
+  ]
+)
 
 export const recenzija=pgTable("recenzija",{
     id:serial("id").primaryKey(),
@@ -52,14 +62,17 @@ export const recenzija=pgTable("recenzija",{
     ocena:integer("ocena").notNull(),
     komentar:text("komentar"),
     datum:timestamp("datum").defaultNow(),
-},(t)=>({
-    oneReviewPerUserPerTutor: unique().on(t.tutorId,t.autorId)
-}));
+},(table)=>[
+      unique().on(table.tutorId).nullsNotDistinct(),
+        unique().on(table.autorId).nullsNotDistinct(),
+    check("ocena_check", sql`${table.ocena} BETWEEN 1 AND 5`),
+   ],
+);
 
 export const prijava=pgTable("prijava",{
     id:serial("id").primaryKey(),
     razlog:text("razlog").notNull(),
     datum:timestamp("datum").defaultNow(),
-    korisnikId:integer("korisnikId").references(()=>korisnik.id,{onDelete:"cascade"}),
-    tutorId:integer("tutorId").references(()=>tutor.idT,{onDelete:"cascade"}),
-})
+    korisnikId:integer("korisnikId").notNull().references(()=>korisnik.id,{onDelete:"cascade"}),
+    oglasId: integer("oglasId").notNull().references(() => oglas.idOglas, { onDelete: "cascade" })
+});

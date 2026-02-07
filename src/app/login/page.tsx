@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useAuth } from "@/context/auth-context";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
@@ -34,6 +35,7 @@ function Toast({
 }
 
 export default function LoginPage() {
+  const { setUser } = useAuth();
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [lozinka, setLozinka] = useState("");
@@ -62,7 +64,11 @@ export default function LoginPage() {
       }
 
       const data: LoginResponse = await res.json();
+      // KLJUČNO: odmah update-ujemo AuthContext
+      setUser(data);
       console.log("Logged in user:", data);
+      router.push("/oglasi"); // redirect
+
 
       // Toast za uspešan login
       setToast("Uspešno ste se prijavili!");
