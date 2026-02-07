@@ -1,6 +1,9 @@
+"use client";
+
 import "./globals.css";
 import Link from "next/link";
-import { AuthProvider } from "@/context/auth-context";
+import { AuthProvider, useAuth } from "@/context/auth-context";
+import LogoutButton from "./components/LogoutButton";
 
 const navLinkStyle = {
   fontWeight: 400,
@@ -8,87 +11,98 @@ const navLinkStyle = {
   color: "#fff",
   textDecoration: "none",
   opacity: 0.9,
-   letterSpacing: "0.4px",
+  letterSpacing: "0.4px",
 };
 
+// Navigacija koja koristi auth kontekst
+function Navigation() {
+  const { user } = useAuth();
+
+  return (
+    <nav style={{ display: "flex", alignItems: "center", gap: 16 }}>
+      <div
+        style={{
+          fontWeight: 900,
+          fontSize: 23,
+          color: "crimson",
+          letterSpacing: 0.5,
+          background: "rgba(255, 45, 85, 0.12)",
+          padding: "6px 10px",
+          borderRadius: 999,
+          border: "1px solid rgba(255, 45, 85, 0.25)",
+        }}
+      >
+        KlikDoZnanja
+      </div>
+
+      <Link href="/" style={navLinkStyle}>
+        Pocetna
+      </Link>
+      <Link href="/oglasi" style={navLinkStyle}>
+        Oglasi
+      </Link>
+
+      {!user && (
+        <>
+          <Link href="/login" style={navLinkStyle}>
+            LogIn
+          </Link>
+          <Link href="/register" style={navLinkStyle}>
+            Register
+          </Link>
+        </>
+      )}
+
+      {user && <LogoutButton />}
+    </nav>
+  );
+}
+
+// Root layout
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="sr">
-<<<<<<< HEAD
-      <body>
-          <AuthProvider>
-            <header style={{ borderBottom: "1px solid #eee", padding: "24px 36px", backgroundColor:"#2e0404"}}>
-              <nav style={{ display: "flex", alignItems: "center", gap: 16 }}>
-                <div style={{ fontWeight: 900, 
-                              fontSize:23,
-                              color:"crimson", 
-                              letterSpacing:0.5,
-                              background: "rgba(255, 45, 85, 0.12)",
-                              padding: "6px 10px",
-                              borderRadius: 999,
-                              border: "1px solid rgba(255, 45, 85, 0.25)"
-                              }}>KlikDoZnanja</div>
-                <Link href="/" style={navLinkStyle}>Pocetna</Link>
-                <Link href="/oglasi" style={navLinkStyle}>Oglasi</Link>
-                <Link href="/nalozi/login" style={navLinkStyle}>Nalog</Link>
-              </nav>
-            </header>
+      <body
+        style={{
+          minHeight: "100vh",
+          display: "flex",
+          flexDirection: "column",
+          backgroundImage: "url('/images/pozadina4.png')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          backgroundAttachment: "fixed",
+        }}
+      >
+        <AuthProvider>
+          {/* HEADER */}
+          <header style={{ padding: "10px 24px", backgroundColor: "#09152b" }}>
+            <Navigation />
+          </header>
 
-            <main style={{ padding: "24px" }}>
+          {/* MAIN */}
+          <main style={{ flex: 1 }}>
+            <div style={{ maxWidth: 1400, margin: "0 auto", padding: "24px 36px" }}>
               {children}
-            </main>
-          </AuthProvider>
-=======
-         <body
-          style={{
-            minHeight: "100vh",
-            display: "flex",
-             flexDirection: "column",
-            backgroundImage: "url('/images/pozadina4.png')",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-            backgroundAttachment: "fixed",
-          }}
->
-        <header style={{padding: "10px 24px",backgroundColor:"#09152b"}}>
-          <nav style={{ display: "flex", alignItems: "center", gap: 16 }}>
-            <div style={{ fontWeight: 900, 
-                          fontSize:23,
-                          color:"crimson", 
-                          letterSpacing:0.5,
-                          background: "rgba(255, 45, 85, 0.12)",
-                          padding: "6px 10px",
-                          borderRadius: 999,
-                          border: "1px solid rgba(255, 45, 85, 0.25)"
-                          }}>KlikDoZnanja</div>
-            <Link href="/" style={navLinkStyle}>Pocetna</Link>
-            <Link href="/oglasi" style={navLinkStyle}>Oglasi</Link>
-            <Link href="/login" style={navLinkStyle}>LogIn</Link>
-          </nav>
-        </header>
+            </div>
+          </main>
 
-        <main style={{flex:1}}>
-           <div style={{ maxWidth: 1400, margin: "0 auto", padding: "24px 36px" }}>
-              {children}
-           </div>
-         </main>
-         <footer style={{  color: "#ffffff",width: "100%", background: "#09152b" }}>
-          <div
-            style={{
-              maxWidth: 1400,
-              margin: "0 auto",
-              padding: "20px 36px",
-              textAlign: "center",
-              fontSize: 14,
-              opacity: 0.7,
-            }}
-          >
-           KlikDoZnanja © 2026 • Sva prava zadržana
-          </div>
-        </footer>
-       
->>>>>>> ec9e174ba489a9d1ce785998e4480d80ea1937af
+          {/* FOOTER */}
+          <footer style={{ color: "#ffffff", width: "100%", background: "#09152b" }}>
+            <div
+              style={{
+                maxWidth: 1400,
+                margin: "0 auto",
+                padding: "20px 36px",
+                textAlign: "center",
+                fontSize: 14,
+                opacity: 0.7,
+              }}
+            >
+              KlikDoZnanja © 2026 • Sva prava zadržana
+            </div>
+          </footer>
+        </AuthProvider>
       </body>
     </html>
   );
