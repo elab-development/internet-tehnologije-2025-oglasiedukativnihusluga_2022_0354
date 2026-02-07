@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import OglasiSidebar from "../components/OglasiSideBar";
 import OglasCard from "../components/OglasCard";
 import { useSearchParams } from "next/navigation";
@@ -12,7 +12,7 @@ type OglasRow = {
   predmet: string;
   opis: string | null;
   lokacija: string | null;
-  cena: string;
+  cena: number;
   nacin: "ONLINE" | "UZIVO" | "OBA";
 };
 
@@ -25,29 +25,39 @@ export default function OglasiClient() {
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    Promise.all([fetch("/api/oglasi"), fetch("/api/predmeti")])
-      .then(async ([o, p]) => {
-        const [ogl, subj] = await Promise.all([o.json(), p.json()]);
-        setOglasi(ogl);
-        setSubjects(subj);
-      })
-      .finally(() => setLoading(false));
-  }, []);
-
   const predmet = sp.get("predmet");
   const nacin = sp.get("nacin");
   const lokacija = sp.get("lokacija");
 
-  const filtered = useMemo(() => {
-    return oglasi.filter((o) => {
-      if (predmet && o.predmet !== predmet) return false;
-      if (nacin && o.nacin !== nacin) return false;
-      if (lokacija && !(o.lokacija ?? "").toLowerCase().includes(lokacija.toLowerCase()))
-        return false;
-      return true;
-    });
-  }, [oglasi, predmet, nacin, lokacija]);
+  // Funkcija za dohvat oglasa sa backend filterima
+  const fetchOglasi = async () => {
+    setLoading(true);
+
+    const query = new URLSearchParams();
+    if (predmet) query.set("predmet", predmet);
+    if (nacin) query.set("nacin", nacin);
+    if (lokacija) query.set("lokacija", lokacija);
+
+    try {
+      const [oglRes, subjRes] = await Promise.all([
+        fetch(`/api/oglasi?${query.toString()}`),
+        fetch("/api/predmeti"),
+      ]);
+
+      const [ogl, subj] = await Promise.all([oglRes.json(), subjRes.json()]);
+      setOglasi(ogl);
+      setSubjects(subj);
+    } catch (e) {
+      console.error("Greska pri ucitavanju oglasa/predmeta", e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // useEffect poziva svaki put kada se promene filteri
+  useEffect(() => {
+    fetchOglasi();
+  }, [predmet, nacin, lokacija]);
 
   if (loading) return <div style={{ padding: 24 }}>Učitavanje...</div>;
 
@@ -58,7 +68,7 @@ export default function OglasiClient() {
 
         <main className="flex-1">
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {filtered.map((o) => (
+            {oglasi.map((o) => (
               <OglasCard
                 key={o.id}
                 id={o.id}
@@ -66,7 +76,7 @@ export default function OglasiClient() {
                 predmet={o.predmet}
                 opis={o.opis}
                 lokacija={o.lokacija}
-                cena={Number(o.cena)}
+                cena={o.cena}
               />
             ))}
           </div>

@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+/*import { NextResponse } from "next/server";
 import { and, eq, ilike, gte, lte } from "drizzle-orm";
 import { db } from "../../../db";
 import { oglas, predmet, tutor, korisnik } from "../../../db/schema";
@@ -45,5 +45,19 @@ export async function GET(req: Request) {
     return NextResponse.json(rows);
   } catch (e) {
     return NextResponse.json({ error: "Greska pri ucitavanju oglasa" }, { status: 500 });
+  }
+}*/
+import { oglasController } from "@/app/controllers/oglasController";
+import { NextRequest } from "next/server";
+
+export async function GET(req: NextRequest) {
+  try {
+    return oglasController.getAll(req.nextUrl.searchParams);
+  } catch (e) {
+    console.error("Greska u oglasi route:", e);
+    return new Response(JSON.stringify({ error: "Greska pri ucitavanju oglasa" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 }
