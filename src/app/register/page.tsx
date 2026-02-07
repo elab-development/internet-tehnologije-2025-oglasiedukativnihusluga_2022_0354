@@ -69,7 +69,7 @@ export default function RegisterPage() {
       console.log("Registered user:", data);
       
       // Preusmeri na login stranu odmah
-      router.push("/login");
+      //router.push("/login");
 
       // Prikaz toast-a
       setToast("Uspešno ste se registrovali! Bićete preusmereni na login...");

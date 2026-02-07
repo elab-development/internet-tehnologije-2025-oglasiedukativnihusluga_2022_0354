@@ -67,7 +67,7 @@ export default function LoginPage() {
       // KLJUČNO: odmah update-ujemo AuthContext
       setUser(data);
       console.log("Logged in user:", data);
-      router.push("/oglasi"); // redirect
+     // router.push("/oglasi"); // redirect
 
 
       // Toast za uspešan login

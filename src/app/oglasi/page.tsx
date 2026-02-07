@@ -2,10 +2,6 @@
 import OglasCard from "../components/OglasCard";
 import OglasiSidebar from "../components/SideBar";
 import LogoutButton from "../components/LogoutButton";
-<<<<<<< HEAD
-
-=======
->>>>>>> ec9e174ba489a9d1ce785998e4480d80ea1937af
 
 
 type SearchParams = {

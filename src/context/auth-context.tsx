@@ -1,3 +1,4 @@
+// auth-context.tsx
 "use client";
 
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
@@ -16,6 +17,8 @@ type AuthContextType = {
   user: User;
   setUser: (user: User) => void;
   logout: () => Promise<void>;
+  toast: string | null;
+  setToast: (msg: string | null) => void;
 };
 
 // Kreiranje konteksta sa default vrednostima
@@ -23,13 +26,16 @@ const AuthContext = createContext<AuthContextType>({
   user: null,
   setUser: () => {},
   logout: async () => {},
+  toast: null,
+  setToast: () => {},
 });
 
 // AuthProvider wrapper
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User>(null);
+  const [toast, setToast] = useState<string | null>(null);
 
-  // Fetch trenutnog korisnika sa servera prilikom mount-a
+    // Fetch trenutnog korisnika sa servera prilikom mount-a
   useEffect(() => {
     async function fetchUser() {
       try {
@@ -40,27 +46,34 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         } else {
           setUser(null);
         }
-      } catch (err) {
-        console.error("Failed to fetch current user:", err);
+      } catch {
         setUser(null);
       }
     }
     fetchUser();
   }, []);
 
-  // Logout funkcija
+    // Logout funkcija
   const logout = async () => {
     try {
       await fetch("/api/auth/logout", { method: "POST" });
-      setUser(null); // resetuje stanje korisnika u React-u
+      setUser(null);
+      setToast("Uspešno ste se izlogovali!");
+      setTimeout(() => setToast(null), 1500); // toast nestaje posle 1.5s
     } catch (err) {
-      console.error("Logout failed:", err);
+      console.error(err);
     }
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser, logout }}>
+    <AuthContext.Provider value={{ user, setUser, logout, toast, setToast }}>
       {children}
+      {/* toast se renderuje nezavisno od user */}
+      {toast && (
+        <div className="fixed top-4 right-4 bg-yellow-600 text-white p-3 rounded shadow-lg animate-fade-in animate-fade-out">
+          {toast}
+        </div>
+      )}
     </AuthContext.Provider>
   );
 };
