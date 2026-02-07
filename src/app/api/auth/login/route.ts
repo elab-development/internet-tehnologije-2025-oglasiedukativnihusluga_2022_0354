@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { korisnik } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import bcrypt from "bcryptjs";
+import bcrypt from "bcrypt";
 import { AUTH_COOKIE, cookieOpts, signAuthToken } from "@/lib/auth";
 
 type Body = {

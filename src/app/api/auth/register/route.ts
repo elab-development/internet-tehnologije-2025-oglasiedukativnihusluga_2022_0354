@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { korisnik } from "@/db/schema";
-import bcrypt from "bcryptjs";
+import bcrypt from "bcrypt";
 import { eq } from "drizzle-orm";
 
 type Body = {
