@@ -1,4 +1,4 @@
-import { AUTH_COOKIE } from "@/lib/auth";
+/*import { AUTH_COOKIE } from "@/lib/auth";
 import { NextResponse } from "next/server";
 
 export async function POST() {
@@ -19,4 +19,9 @@ export async function POST() {
     console.error("Logout failed:", err);
     return NextResponse.json({ error: "Logout failed" }, { status: 500 });
   }
+}*/
+import { authController } from "@/app/controllers/authController";
+
+export async function POST() {
+  return authController.logout();
 }

@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+/*import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { korisnik } from "@/db/schema";
 import { eq } from "drizzle-orm";
@@ -39,4 +39,11 @@ export async function POST(req: Request) {
 
   res.cookies.set(AUTH_COOKIE, token, cookieOpts());
   return res;
+}
+*/
+import { authController } from "@/app/controllers/authController";
+
+export async function POST(req: Request) {
+  const body = await req.json();
+  return authController.login(body);
 }

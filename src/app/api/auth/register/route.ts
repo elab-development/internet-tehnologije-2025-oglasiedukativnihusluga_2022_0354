@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+/*import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { korisnik } from "@/db/schema";
 import bcrypt from "bcrypt";
@@ -49,4 +49,11 @@ export async function POST(req: Request) {
     { id: korisnikId, email: body.email, ime: body.ime, prezime: body.prezime, role: "KORISNIK" },
     { status: 201 }
   );
+}
+*/
+import { authController } from "@/app/controllers/authController";
+
+export async function POST(req: Request) {
+  const body = await req.json();
+  return authController.register(body);
 }
