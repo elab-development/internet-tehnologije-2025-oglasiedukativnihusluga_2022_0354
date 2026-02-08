@@ -12,7 +12,7 @@ type Props={
 export default function OglasCard({id,ime,predmet,opis,lokacija,cena}:Props){
 
     return(
-        <Link href={'/oglasi/${id}'}
+        <Link href={`/oglasi/${id}`}
         style={{
             display:"block",
             border:"1px solid #e5e7eb",

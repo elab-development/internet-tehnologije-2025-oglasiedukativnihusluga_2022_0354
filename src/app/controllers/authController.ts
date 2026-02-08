@@ -7,7 +7,14 @@ import { signAuthToken, AUTH_COOKIE, cookieOpts, verifyAuthToken } from "@/lib/a
 import { NextResponse } from "next/server";
 
 type LoginBody = { email: string; lozinka: string };
-type RegisterBody = { ime: string; prezime: string; email: string; lozinka: string };
+type RegisterBody = {
+  ime: string;
+  prezime: string;
+  email: string;
+  lozinka: string;
+  uloga?: "ADMIN" | "KORISNIK" | "TUTOR"; // opcionalno
+};
+
 
 export const authController = {
   // LOGIN
@@ -37,35 +44,40 @@ export const authController = {
   },
 
   // REGISTER
-  async register({ ime, prezime, email, lozinka }: RegisterBody) {
-    if (!ime || !prezime || !email || !lozinka) {
-      return NextResponse.json({ error: "Nedostaju podaci." }, { status: 400 });
-    }
+  async register({ ime, prezime, email, lozinka, uloga }: RegisterBody, creatorRole: string = "KORISNIK") {
+  if (!ime || !prezime || !email || !lozinka) {
+    return NextResponse.json({ error: "Nedostaju podaci." }, { status: 400 });
+  }
 
-    const existing = await db.query.korisnik.findFirst({
-      where: eq(korisnik.email, email),
-      columns: { id: true },
-    });
+  const existing = await db.query.korisnik.findFirst({
+    where: eq(korisnik.email, email),
+    columns: { id: true },
+  });
+  if (existing) return NextResponse.json({ error: "Email je već zauzet." }, { status: 409 });
 
-    if (existing) return NextResponse.json({ error: "Email je već zauzet." }, { status: 409 });
+  // Samo ADMIN može postaviti drugu ulogu
+  let finalRole: "ADMIN" | "KORISNIK" | "TUTOR" = "KORISNIK";
+  if (uloga && creatorRole === "ADMIN") {
+    finalRole = uloga;
+  }
 
-    const hashed = await bcrypt.hash(lozinka, 10);
+  const hashed = await bcrypt.hash(lozinka, 10);
 
-    const insertResult = await db.insert(korisnik).values({
-      ime,
-      prezime,
-      email,
-      lozinka: hashed,
-      uloga: "KORISNIK",
-      blokiran: false,
-    }).returning({ id: korisnik.id });
+  const insertResult = await db.insert(korisnik).values({
+    ime,
+    prezime,
+    email,
+    lozinka: hashed,
+    uloga: finalRole,
+    blokiran: false,
+  }).returning({ id: korisnik.id });
 
-    const korisnikId = insertResult[0].id;
-    return NextResponse.json(
-      { id: korisnikId, email, ime, prezime, role: "KORISNIK" },
-      { status: 201 }
-    );
-  },
+  const korisnikId = insertResult[0].id;
+  return NextResponse.json(
+    { id: korisnikId, email, ime, prezime, role: finalRole },
+    { status: 201 }
+  );
+},
 
   // LOGOUT
   async logout() {

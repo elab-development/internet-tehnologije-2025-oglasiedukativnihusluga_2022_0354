@@ -1,75 +1,72 @@
+// controllers/recenzijaController.ts
 import { db } from "@/db";
-import { recenzija } from "@/db/schema";
-import { NextResponse } from "next/server";
+import { recenzija, tutor, korisnik } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import { NextResponse } from "next/server";
+
+type CreateRecenzijaBody = {
+  tutorId: number;
+  ocena: number;
+  komentar?: string;
+};
 
 export const recenzijaController = {
-  // Dohvata sve recenzije za određenog tutora
-  async getByTutorId(tutorId: number) {
+  // GET sve recenzije za određenog tutora
+  async getAll(tutorId?: number) {
     try {
-      if (!tutorId) {
-        return NextResponse.json(
-          { error: "Tutor ID je obavezan" },
-          { status: 400 }
-        );
-      }
+       const rows = await db.select({
+      id: recenzija.id,
+      tutorId: recenzija.tutorId,
+      autorId: recenzija.autorId,
+      autorIme: korisnik.ime,
+      autorPrezime: korisnik.prezime,
+      ocena: recenzija.ocena,
+      komentar: recenzija.komentar,
+      datum: recenzija.datum,
+    })
+    .from(recenzija)
+    .leftJoin(korisnik, eq(korisnik.id, recenzija.autorId))
+    .where(tutorId ? eq(recenzija.tutorId, tutorId) : undefined); // tutorId ? filter : undefined
 
-      const reviews = await db
-        .select()
-        .from(recenzija)
-        .where(eq(recenzija.tutorId, tutorId));
-
-      return NextResponse.json(reviews, { status: 200 });
+    return NextResponse.json(rows);
     } catch (err) {
-      console.error("Greska pri ucitavanju recenzija:", err);
-      return NextResponse.json(
-        { error: "Greska pri ucitavanju recenzija" },
-        { status: 500 }
-      );
+      console.error(err);
+      return NextResponse.json({ error: "Greška prilikom učitavanja recenzija" }, { status: 500 });
     }
   },
 
-  // Kreira novu recenziju
-  async create(data: {
-    tutorId: number;
-    autorId: number;
-    ocena: number;
-    komentar?: string;
-  }) {
+  // POST nova recenzija (samo registrovani korisnik)
+  async create(body: CreateRecenzijaBody, userId: number) {
     try {
-      const { tutorId, autorId, ocena, komentar } = data;
+      const { tutorId, ocena, komentar } = body;
 
-      // osnovna validacija
-      if (!tutorId || !autorId || !ocena) {
-        return NextResponse.json(
-          { error: "Tutor ID, Autor ID i ocena su obavezni" },
-          { status: 400 }
-        );
+      if (!tutorId || !ocena) {
+        return NextResponse.json({ error: "Nedostaju obavezna polja" }, { status: 400 });
       }
 
-      const insert = await db
-        .insert(recenzija)
-        .values({
-          tutorId,
-          autorId,
-          ocena,
-          komentar: komentar || null,
-        })
-        .returning({
-          id: recenzija.id,
-          tutorId: recenzija.tutorId,
-          autorId: recenzija.autorId,
-          ocena: recenzija.ocena,
-          komentar: recenzija.komentar,
-        });
+      // Dodavanje recenzije
+      const insertResult = await db.insert(recenzija).values({
+        tutorId,
+        autorId: userId,
+        ocena,
+        komentar,
+      }).returning({ id: recenzija.id });
 
-      return NextResponse.json(insert[0], { status: 201 });
+      return NextResponse.json({ ok: true, id: insertResult[0].id }, { status: 201 });
     } catch (err) {
-      console.error("Greska pri dodavanju recenzije:", err);
-      return NextResponse.json(
-        { error: "Greska pri dodavanju recenzije" },
-        { status: 500 }
-      );
+      console.error(err);
+      return NextResponse.json({ error: "Greška prilikom kreiranja recenzije" }, { status: 500 });
+    }
+  },
+
+  // DELETE recenzija (samo admin)
+  async delete(recenzijaId: number) {
+    try {
+      await db.delete(recenzija).where(eq(recenzija.id, recenzijaId));
+      return NextResponse.json({ ok: true });
+    } catch (err) {
+      console.error(err);
+      return NextResponse.json({ error: "Greška prilikom brisanja recenzije" }, { status: 500 });
     }
   },
 };

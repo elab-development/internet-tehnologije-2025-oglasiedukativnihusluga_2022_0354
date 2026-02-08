@@ -1,27 +1,54 @@
 import { db } from "@/db";
 import { prijava } from "@/db/schema";
 import { NextResponse } from "next/server";
+import { eq } from "drizzle-orm";
+
+type CreatePrijavaBody = {
+  oglasId: number;
+  razlog: string;
+};
 
 export const prijavaController = {
+  // Dobavljanje svih prijava (samo ADMIN)
   async getAll() {
     try {
-      const reports = await db.select().from(prijava);
-      return NextResponse.json(reports);
-    } catch {
-      return NextResponse.json({ error: "Greska pri ucitavanju prijava" }, { status: 500 });
+      const rows = await db.select().from(prijava);
+      return NextResponse.json(rows);
+    } catch (err) {
+      console.error(err);
+      return NextResponse.json({ error: "Greška pri dobavljanju prijava" }, { status: 500 });
     }
   },
 
-  async create(data: { korisnikId: number; oglasId: number; razlog: string }) {
+  // Kreiranje prijave (registrovani korisnici)
+  async create(body: CreatePrijavaBody, userId: number) {
     try {
-      const insert = await db.insert(prijava).values({
-        korisnikId: data.korisnikId,
-        oglasId: data.oglasId,
-        razlog: data.razlog,
-      }).returning({ id: prijava.id });
-      return NextResponse.json(insert[0], { status: 201 });
-    } catch {
-      return NextResponse.json({ error: "Greska pri kreiranju prijave" }, { status: 500 });
+      const { oglasId, razlog } = body;
+      if (!oglasId || !razlog) {
+        return NextResponse.json({ error: "Nedostaju podaci" }, { status: 400 });
+      }
+
+      const [row] = await db.insert(prijava).values({
+        oglasId,
+        razlog,
+        korisnikId: userId,
+      }).returning();
+
+      return NextResponse.json(row, { status: 201 });
+    } catch (err) {
+      console.error(err);
+      return NextResponse.json({ error: "Greška pri kreiranju prijave" }, { status: 500 });
+    }
+  },
+
+  // Brisanje prijave (samo ADMIN)
+  async delete(id: number) {
+    try {
+      await db.delete(prijava).where(eq(prijava.id, id));
+      return NextResponse.json({ ok: true });
+    } catch (err) {
+      console.error(err);
+      return NextResponse.json({ error: "Greška pri brisanju prijave" }, { status: 500 });
     }
   },
 };

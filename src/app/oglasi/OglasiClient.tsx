@@ -27,9 +27,11 @@ export default function OglasiClient() {
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<OglasRow | null>(null);
 
-  const predmet = sp.get("predmet");
-  const nacin = sp.get("nacin");
-  const lokacija = sp.get("lokacija");
+  const predmet = sp.get("predmet") ?? "";
+  const nacin = sp.get("nacin") ?? "";
+  const lokacija = sp.get("lokacija") ?? "";
+  const minCena = sp.get("minCena") ?? "";
+  const maxCena = sp.get("maxCena") ?? "";
 
   const fetchOglasi = async () => {
     setLoading(true);
@@ -38,30 +40,28 @@ export default function OglasiClient() {
     if (predmet) query.set("predmet", predmet);
     if (nacin) query.set("nacin", nacin);
     if (lokacija) query.set("lokacija", lokacija);
+    if (minCena) query.set("minCena", minCena);
+    if (maxCena) query.set("maxCena", maxCena);
 
-    try {
+  try {
       const [oglRes, subjRes] = await Promise.all([
         fetch(`/api/oglasi?${query.toString()}`),
         fetch("/api/predmeti"),
       ]);
 
-      const [ogl, subj] = await Promise.all([
-        oglRes.json(),
-        subjRes.json(),
-      ]);
-
+      const [ogl, subj] = await Promise.all([oglRes.json(), subjRes.json()]);
       setOglasi(ogl);
       setSubjects(subj);
-    } catch (e) {
-      console.error("Greska pri ucitavanju oglasa/predmeta", e);
-    } finally {
-      setLoading(false);
-    }
-  };
+  } catch (e) {
+    console.error("Greska pri ucitavanju oglasa/predmeta", e);
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
-    fetchOglasi();
-  }, [predmet, nacin, lokacija]);
+      fetchOglasi();
+    }, [predmet, nacin, lokacija, minCena, maxCena]);
 
   if (loading) return <div style={{ padding: 24 }}>Učitavanje...</div>;
 
