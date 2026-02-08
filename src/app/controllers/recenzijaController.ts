@@ -54,9 +54,13 @@ export const recenzijaController = {
 
       return NextResponse.json({ ok: true, id: insertResult[0].id }, { status: 201 });
     } catch (err) {
-      console.error(err);
-      return NextResponse.json({ error: "Greška prilikom kreiranja recenzije" }, { status: 500 });
-    }
+  console.error("DB ERROR:", err);
+
+  return NextResponse.json(
+    { error: String(err) },
+    { status: 500 }
+  );
+}
   },
 
   // DELETE recenzija (samo admin)

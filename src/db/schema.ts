@@ -63,8 +63,7 @@ export const recenzija=pgTable("recenzija",{
     komentar:text("komentar"),
     datum:timestamp("datum").defaultNow(),
 },(table)=>[
-      unique().on(table.tutorId).nullsNotDistinct(),
-        unique().on(table.autorId).nullsNotDistinct(),
+      unique().on(table.tutorId, table.autorId),
     check("ocena_check", sql`${table.ocena} BETWEEN 1 AND 5`),
    ],
 );

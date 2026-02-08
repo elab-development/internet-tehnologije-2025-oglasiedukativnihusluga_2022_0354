@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
 import { authController } from "@/app/controllers/authController";
 import { NextRequest } from "next/server";
 
-export const runtime = "edge"; // Optional: koristi Edge runtime da bi NextRequest imao cookies
+export const runtime = "nodejs"; // Optional: koristi Edge runtime da bi NextRequest imao cookies
 
 export async function GET(req: NextRequest) {
     // Uzmi token iz cookie-ja

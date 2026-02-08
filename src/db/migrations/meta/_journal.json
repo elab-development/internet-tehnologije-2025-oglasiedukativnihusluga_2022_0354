@@ -29,6 +29,13 @@
       "when": 1770440002819,
       "tag": "0003_thin_slayback",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1770530327669,
+      "tag": "0004_steep_silver_sable",
+      "breakpoints": true
     }
   ]
 }

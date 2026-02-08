@@ -35,25 +35,31 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User>(null);
   const [toast, setToast] = useState<string | null>(null);
 
-    // Fetch trenutnog korisnika sa servera prilikom mount-a
+  // Fetch trenutnog korisnika sa servera prilikom mount-a
   useEffect(() => {
     async function fetchUser() {
       try {
         const res = await fetch("/api/auth/me");
         if (res.ok) {
           const data = await res.json();
-          setUser(data?.id ? data : null);
+          // Osiguravamo da uvek postoji polje uloga
+          if (data.user && data.user.uloga) {
+            setUser(data.user);
+          } else {
+            setUser(null);
+          }
         } else {
           setUser(null);
         }
-      } catch {
+      } catch (err) {
+        console.error("Greška pri fetchovanju korisnika:", err);
         setUser(null);
       }
     }
     fetchUser();
   }, []);
 
-    // Logout funkcija
+  // Logout funkcija
   const logout = async () => {
     try {
       await fetch("/api/auth/logout", { method: "POST" });

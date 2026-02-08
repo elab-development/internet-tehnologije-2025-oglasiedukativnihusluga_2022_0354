@@ -40,6 +40,7 @@ export const oglasController = {
     const rows = await db
       .select({
         id: oglas.idOglas,
+        tutorId:oglas.tutorId,
         ime: korisnik.ime,
         prezime: korisnik.prezime,
         predmet: predmet.nazivPredmeta,
