@@ -12,7 +12,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="sr">
-      <body className="min-h-screen antialiased">
+      <body className="min-h-screen antialiased flex flex-col">
         {/* Background */}
         <div className="fixed inset-0 -z-10">
           <div className="absolute inset-0 bg-[url('/images/pozadina4.png')] bg-cover bg-center" />
@@ -47,10 +47,13 @@ export default function RootLayout({
           </header>
 
           {/* MAIN */}
-          <main className="mx-auto w-full max-w-6xl px-6 py-10">{children}</main>
+          <main className="mx-auto w-full max-w-6xl px-6 py-10 flex-1">
+  {children}
+</main>
+
 
           {/* FOOTER */}
-          <footer className="border-t border-white/10 bg-[#09152b]/60">
+          <footer className="w-full border-t border-white/10 bg-[#09152b]/60">
             <div className="mx-auto max-w-6xl px-6 py-6 text-center text-sm text-white/60">
               KlikDoZnanja © 2026 • Sva prava zadržana
             </div>
