@@ -1,12 +1,9 @@
-import Link from "next/link";
+"use client";
 
-function Card({
-  title,
-  desc,
-}: {
-  title: string;
-  desc: string;
-}) {
+import Link from "next/link";
+import { useAuth } from "@/context/auth-context";
+
+function Card({ title, desc }: { title: string; desc: string }) {
   return (
     <div className="rounded-2xl border border-white/10 bg-white/10 p-5 backdrop-blur-xl transition duration-300 hover:scale-[1.03]">
       <div className="text-base font-semibold text-white">{title}</div>
@@ -25,6 +22,8 @@ function Stat({ value, label }: { value: string; label: string }) {
 }
 
 export default function HomePage() {
+  const { user } = useAuth(); // uzima info iz auth konteksta
+
   return (
     <div className="grid gap-10 md:grid-cols-2 md:items-center">
       {/* Left: Hero */}
@@ -50,20 +49,27 @@ export default function HomePage() {
           >
             Pogledaj oglase
           </Link>
-          <Link
-            href="/register"
-            className="rounded-xl bg-rose-500/90 px-5 py-3 font-semibold text-white hover:bg-rose-500"
-          >
-            Napravi nalog
-          </Link>
+
+          {/* prikazuje se samo ako user NIJE loginovan */}
+          {!user && (
+            <Link
+              href="/register"
+              className="rounded-xl bg-rose-500/90 px-5 py-3 font-semibold text-white hover:bg-rose-500"
+            >
+              Napravi nalog
+            </Link>
+          )}
         </div>
 
-        <p className="text-sm text-white/60">
-          Već imaš nalog?{" "}
-          <Link className="underline hover:text-white" href="/login">
-            Prijavi se
-          </Link>
-        </p>
+        {/* prikazuje se samo ako user NIJE loginovan */}
+        {!user && (
+          <p className="text-sm text-white/60">
+            Već imaš nalog?{" "}
+            <Link className="underline hover:text-white" href="/login">
+              Prijavi se
+            </Link>
+          </p>
+        )}
       </section>
 
       {/* Desno: Clean info blocks */}
