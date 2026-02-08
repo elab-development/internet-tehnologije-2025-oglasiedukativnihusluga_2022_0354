@@ -54,7 +54,35 @@ export const tutorController = {
       return NextResponse.json({ error: "Greška pri dobavljanju tutora" }, { status: 500 });
     }
   },
+  //Get za pojedinacnog tutora
+  async getOne(tutorId: number) {
+  try {
+    const row = await db
+      .select({
+        idT: tutor.idT,
+        ime: korisnik.ime,
+        prezime: korisnik.prezime,
+        biografija: tutor.biografija,
+        godineIskustva: tutor.godineIskustva,
+        lokacija: tutor.lokacija,
+        telefon: tutor.telefon,
+        email:korisnik.email,
+      })
+      .from(tutor)
+      .innerJoin(korisnik, eq(korisnik.id, tutor.idT))
+      .where(eq(tutor.idT, tutorId));
 
+    if (!row || row.length === 0) {
+      return NextResponse.json({ error: "Tutor nije pronađen" }, { status: 404 });
+    }
+    
+
+    return NextResponse.json(row[0], { status: 200 });
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ error: "Greška pri učitavanju tutora" }, { status: 500 });
+  }
+},
   // Brisanje tutor profila
   async delete(id: number) {
     try {

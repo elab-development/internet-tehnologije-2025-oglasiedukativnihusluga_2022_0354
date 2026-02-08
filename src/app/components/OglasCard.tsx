@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth-context";
 
-// Tip props-a
 type Props = {
   id: number;
   ime: string;
@@ -11,122 +11,91 @@ type Props = {
   opis?: string | null;
   lokacija?: string | null;
   cena: number;
-  tutorId?: number;
+  tutorId: number;
 };
 
-
-// Modal komponenta unutar OglasCard
-function Modal({
-  open,
-  onClose,
-  children,
-}: {
-  open: boolean;
-  onClose: () => void;
-  children: React.ReactNode;
-}) {
+function Modal({ open, onClose, children }: { open: boolean; onClose: () => void; children: React.ReactNode }) {
   if (!open) return null;
 
   return (
-    <div
-      className="fixed inset-0 bg-black/50 flex justify-center items-center z-50"
-      onClick={onClose}
-    >
+    <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50" onClick={onClose}>
       <div
         className="bg-white text-black p-6 rounded-lg max-w-lg w-full"
         onClick={(e) => e.stopPropagation()}
       >
-        <button
-          className="float-right text-red-500"
-          onClick={onClose}
-        >
-          X
-        </button>
+        <button className="float-right text-red-500" onClick={onClose}>X</button>
         {children}
       </div>
     </div>
   );
 }
 
-export default function OglasCard({
-  id,
-  ime,
-  predmet,
-  opis,
-  lokacija,
-  cena,
-  tutorId,
-}: Props) {
-  const { user } = useAuth(); // da vidimo ulogovanog korisnika
+export default function OglasCard({ id, ime, predmet, opis, lokacija, cena, tutorId }: Props) {
+  const { user } = useAuth();
+  const router = useRouter();
+
   const [showModal, setShowModal] = useState(false);
   const [ocena, setOcena] = useState(5);
   const [komentar, setKomentar] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  // Funkcija za slanje recenzije
+  // Funkcija za recenziju
   const submitRecenzija = async () => {
-  if (!user) {
-    console.error("Korisnik nije ulogovan!");
-    return;
-  }
+    if (!tutorId) return;
 
-  if (!tutorId) {
-    console.error("Nedostaje tutorId!");
-    return;
-  }
+    setLoading(true);
+    try {
+      const res = await fetch("/api/recenzija", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ tutorId, ocena, komentar }),
+      });
 
-  setLoading(true);
-  try {
-    console.log("Saljem recenziju:", { tutorId, ocena, komentar });
+      const data = await res.json();
 
-    const res = await fetch("/api/recenzija", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ tutorId, ocena, komentar }),
-    });
-
-    const data = await res.json();
-    console.log("Odgovor API-ja:", data);
-
-    if (res.ok) {
-      setSuccess(true);
-      setTimeout(() => setShowModal(false), 1500);
-    } else {
-      console.error("Greška pri slanju recenzije", data);
+      if (res.ok && data.ok) {
+        setSuccess(true);
+        setTimeout(() => setShowModal(false), 1500);
+      } else {
+        console.error("Greška pri slanju recenzije", data);
+      }
+    } catch (err) {
+      console.error("Fetch error:", err);
+    } finally {
+      setLoading(false);
     }
-  } catch (err) {
-    console.error("Fetch error:", err);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
+
+  // Funkcija za klik na karticu (osim dugmeta)
+  const handleCardClick = () => {
+    if (user?.uloga === "KORISNIK") {
+      router.push(`/tutor/${tutorId}`);
+    }
+  };
 
   return (
     <div
-      style={{
-        display: "block",
-        border: "1px solid #e5e7eb",
-        borderRadius: 12,
-        overflow: "hidden",
-        background: "white",
-      }}
+      style={{ display: "block", border: "1px solid #e5e7eb", borderRadius: 12, overflow: "hidden", background: "white" }}
     >
-      {/* Samo prikaz oglasa */}
-      <div style={{ padding: 16, minHeight: 220 }}>
+      {/* Klikabilni deo kartice */}
+      <div
+        style={{ padding: 16, minHeight: 220, cursor: user?.uloga === "KORISNIK" ? "pointer" : "default" }}
+        onClick={handleCardClick} // Ovo preusmerava korisnika
+      >
         <div style={{ marginTop: 14, fontSize: 28, fontWeight: 800 }}>{ime}</div>
         <div style={{ marginTop: 6, opacity: 0.8, fontWeight: 600 }}>{predmet}</div>
         <div style={{ marginTop: 10, opacity: 0.8, lineHeight: 1.5 }}>{opis ?? "-"}</div>
       </div>
 
-      {/* Footer sa lokacijom, cenom i dugmetom */}
       <div style={{ background: "#0f172a", color: "white", padding: 15 }}>
         <div style={{ opacity: 0.95 }}>{lokacija ?? "-"}</div>
         <div style={{ marginTop: 8, fontWeight: 800 }}>{cena} RSD/60</div>
 
+        {/* Dugme za recenziju ostaje isto */}
         {user?.uloga === "KORISNIK" && (
           <button
-            onClick={() => setShowModal(true)}
+            onClick={(e) => { e.stopPropagation(); setShowModal(true); }}
             style={{
               marginTop: 10,
               padding: "8px 12px",
@@ -142,7 +111,7 @@ export default function OglasCard({
         )}
       </div>
 
-      {/* Modal */}
+      {/* Modal za recenziju */}
       <Modal open={showModal} onClose={() => setShowModal(false)}>
         <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 12 }}>Ostavi recenziju</h2>
 
@@ -153,7 +122,7 @@ export default function OglasCard({
             onChange={(e) => setOcena(Number(e.target.value))}
             style={{ width: "100%", padding: 8, marginTop: 4, marginBottom: 12 }}
           >
-            {[5, 4, 3, 2, 1].map((n) => (
+            {[5,4,3,2,1].map((n) => (
               <option key={n} value={n}>{n}</option>
             ))}
           </select>

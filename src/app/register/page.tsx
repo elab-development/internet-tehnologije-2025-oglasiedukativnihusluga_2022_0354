@@ -43,6 +43,9 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
+  const [uloga, setUloga] = useState<"KORISNIK" | "TUTOR">("KORISNIK");
+
+  
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,7 +57,7 @@ export default function RegisterPage() {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ime, prezime, email, lozinka }),
+        body: JSON.stringify({ ime, prezime, email, lozinka,  uloga, }),
       });
 
       if (!res.ok) {
@@ -127,6 +130,14 @@ export default function RegisterPage() {
           required
           className="border p-2 rounded"
         />
+        <select
+          value={uloga}
+          onChange={(e) => setUloga(e.target.value as "KORISNIK" | "TUTOR")}
+          className="border p-2 rounded"
+          >
+          <option value="KORISNIK">Korisnik (tražim časove)</option>
+          <option value="TUTOR">Tutor (držim časove)</option>
+        </select>
         <button
           type="submit"
           disabled={loading}

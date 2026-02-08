@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import OglasiSidebar from "../components/OglasiSideBar";
 import OglasCard from "../components/OglasCard";
 import { useSearchParams } from "next/navigation";
-import Modal from "../components/Modal";
 
 type OglasRow = {
   id: number;
@@ -15,7 +14,7 @@ type OglasRow = {
   lokacija: string | null;
   cena: number;
   nacin: "ONLINE" | "UZIVO" | "OBA";
-  tutorId?: number;
+  tutorId:number;
 };
 
 type Subject = { nazivPredmeta: string };
@@ -26,11 +25,10 @@ export default function OglasiClient() {
   const [oglasi, setOglasi] = useState<OglasRow[]>([]);
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selected, setSelected] = useState<OglasRow | null>(null);
 
-  const predmet = sp.get("predmet");
-  const nacin = sp.get("nacin");
-  const lokacija = sp.get("lokacija");
+  const predmet = sp.get("predmet") ?? "";
+  const nacin = sp.get("nacin") ?? "";
+  const lokacija = sp.get("lokacija") ?? "";
 
   const fetchOglasi = async () => {
     setLoading(true);
@@ -46,13 +44,12 @@ export default function OglasiClient() {
         fetch("/api/predmeti"),
       ]);
 
-      const [ogl, subj] = await Promise.all([
-        oglRes.json(),
-        subjRes.json(),
-      ]);
+      const [ogl, subj] = await Promise.all([oglRes.json(), subjRes.json()]);
 
       setOglasi(ogl);
       setSubjects(subj);
+    } catch (e) {
+      console.error("Greska pri ucitavanju oglasa/predmeta", e);
     } finally {
       setLoading(false);
     }
@@ -72,50 +69,20 @@ export default function OglasiClient() {
         <main className="flex-1">
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {oglasi.map((o) => (
-              <div
+              <OglasCard
                 key={o.id}
-                role="button"
-                tabIndex={0}
-                className="cursor-pointer"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setSelected(o);
-                }}
-              >
-                <OglasCard
-                  id={o.id}
-                  ime={`${o.ime} ${o.prezime}`}
-                  predmet={o.predmet}
-                  opis={o.opis}
-                  lokacija={o.lokacija}
-                  cena={o.cena}
-                  tutorId={o.tutorId}
-                />
-              </div>
+                id={o.id}
+                ime={`${o.ime} ${o.prezime}`}
+                predmet={o.predmet}
+                opis={o.opis}
+                lokacija={o.lokacija}
+                cena={o.cena}
+                tutorId={o.tutorId}
+              />
             ))}
           </div>
         </main>
       </div>
-
-      <Modal open={!!selected} onClose={() => setSelected(null)}>
-        {selected && (
-          <div className="space-y-2">
-            <h2 className="text-xl font-bold">
-              {selected.predmet}
-            </h2>
-
-            {selected.opis && <p>{selected.opis}</p>}
-
-            <p><b>Cena:</b> {selected.cena}</p>
-            <p>
-              <b>Lokacija:</b>{" "}
-              {selected.lokacija ?? "Nije navedeno"}
-            </p>
-            <p><b>Način:</b> {selected.nacin}</p>
-          </div>
-        )}
-      </Modal>
     </div>
   );
 }

@@ -3,6 +3,18 @@ import { tutorController } from "@/app/controllers/tutorController";
 import { requireAuth } from "@/lib/authMiddleware";
 import { NextResponse } from "next/server";
 
+export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id: idParam } = await params;
+  const id = Number(idParam);
+
+  if (!id) {
+    return NextResponse.json({ error: "Neispravan ID." }, { status: 400 });
+  }
+
+  return tutorController.getOne(id);
+}
+
+
 export async function DELETE(req: NextRequest,{ params }: { params: { id: string } }) {
   try {
     const token = req.cookies.get("auth")?.value;
