@@ -11,8 +11,9 @@ type Props = {
   opis?: string | null;
   lokacija?: string | null;
   cena: number;
-  tutorId: number;
+  tutorId?: number;
 };
+
 
 // Modal komponenta unutar OglasCard
 function Modal({
