@@ -9,11 +9,9 @@ type TutorData = {
   godineIskustva: number;
   lokacija?: string | null;
   telefon?: string | null;
-  korisnik: {
-    ime: string;
-    prezime: string;
-    email: string;
-  };
+  ime: string;
+  prezime: string;
+  email: string;
 };
 
 export default function TutorPage() {
@@ -58,6 +56,9 @@ export default function TutorPage() {
 
   return (
     <div className="max-w-3xl mx-auto mt-10 p-6 bg-white shadow rounded">
+      <h1>{tutor.ime} {tutor.prezime}</h1>
+      <p><b>Email:</b> {tutor.email}</p>
+
       <p><b>Godine iskustva:</b> {tutor.godineIskustva}</p>
       <p><b>Telefon:</b> {tutor.telefon ?? "-"}</p>
       <p><b>Lokacija:</b> {tutor.lokacija ?? "-"}</p>
