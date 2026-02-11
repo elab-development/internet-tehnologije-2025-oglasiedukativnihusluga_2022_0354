@@ -53,12 +53,12 @@ export default function TutorPage() {
   if (loading) return <div style={{ padding: 24 }}>Učitavanje...</div>;
   if (error) return <div style={{ padding: 24, color: "red" }}>{error}</div>;
   if (!tutor) return <div style={{ padding: 24 }}>Tutor nije pronađen</div>;
-
+ /*  <h1>{tutor.ime} {tutor.prezime}</h1>
+      <p><b>Email:</b> {tutor.email}</p>
+*/
   return (
     <div className="max-w-3xl mx-auto mt-10 p-6 bg-white shadow rounded">
-      <h1>{tutor.ime} {tutor.prezime}</h1>
-      <p><b>Email:</b> {tutor.email}</p>
-
+     
       <p><b>Godine iskustva:</b> {tutor.godineIskustva}</p>
       <p><b>Telefon:</b> {tutor.telefon ?? "-"}</p>
       <p><b>Lokacija:</b> {tutor.lokacija ?? "-"}</p>

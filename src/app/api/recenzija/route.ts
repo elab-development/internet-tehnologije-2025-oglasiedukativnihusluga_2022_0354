@@ -4,6 +4,8 @@ import { NextRequest } from "next/server";
 
 // GET sve recenzije ili po tutorId
 export async function GET(req: NextRequest) {
+  const token = req.cookies.get("auth")?.value;
+  requireAuth(token); // ne moraš navoditi role ako su svi logovani dozvoljeni
   const tutorId = req.nextUrl.searchParams.get("tutorId");
   return recenzijaController.getAll(tutorId ? Number(tutorId) : undefined);
 }
