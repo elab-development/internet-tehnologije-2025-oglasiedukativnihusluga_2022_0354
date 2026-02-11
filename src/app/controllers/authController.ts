@@ -55,11 +55,7 @@ export const authController = {
   });
   if (existing) return NextResponse.json({ error: "Email je već zauzet." }, { status: 409 });
 
-  // Samo ADMIN može postaviti drugu ulogu
-  //let finalRole: "ADMIN" | "KORISNIK" | "TUTOR" = "KORISNIK";
-  //if (uloga && creatorRole === "ADMIN") {
-    //finalRole = uloga;
- // }
+ 
   let finalRole: "ADMIN" | "KORISNIK" | "TUTOR" =
    uloga === "TUTOR" ? "TUTOR" : "KORISNIK";
 

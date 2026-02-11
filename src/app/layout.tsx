@@ -18,23 +18,28 @@ function Navigation() {
       }}
     >
       {/* Levo: KlikDoZnanja + Pocetna */}
-      <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-        <div
-          style={{
-            fontWeight: 900,
-            fontSize: 23,
-            color: "crimson",
-            letterSpacing: 0.5,
-            background: "rgba(255, 45, 85, 0.12)",
-            padding: "6px 10px",
-            borderRadius: 999,
-            border: "1px solid rgba(255, 45, 85, 0.25)",
-          }}
-        >
-          KlikDoZnanja
-        </div>
+<div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+  <Link href="/" style={{ textDecoration: "none" }}>
+    <div
+      style={{
+        fontWeight: 900,
+        fontSize: 23,
+        color: "crimson",
+        letterSpacing: 0.5,
+        background: "rgba(255, 45, 85, 0.12)",
+        padding: "6px 10px",
+        borderRadius: 999,
+        border: "1px solid rgba(255, 45, 85, 0.25)",
+        cursor: "pointer",
+      }}
+    >
+      KlikDoZnanja
+    </div>
+  </Link>
+</div>
 
-        <Link
+
+   {/*      <Link
           href="/"
           style={{
             fontWeight: 400,
@@ -45,10 +50,10 @@ function Navigation() {
             letterSpacing: "0.4px",
           }}
         >
-          Pocetna
+          
         </Link>
       </div>
-
+ */}
       {/* Desno: Logout dugme (samo ako je loginovan) */}
       <div>{user && <LogoutButton />}</div>
     </nav>

@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import FilterBtn from "./FilterBtn";
+import { useEffect, useState } from "react";
 
 type Subject = {
   nazivPredmeta: string;
@@ -17,15 +18,32 @@ export default function OglasiSidebar({ subjects }: Props) {
 
   const predmet = sp.get("predmet"); 
   const nacin = sp.get("nacin"); 
-  const lokacija = sp.get("lokacija") ?? "";
+  const lokacijaParam = sp.get("lokacija") ?? "";
+  const [lokacija, setLokacija] = useState(lokacijaParam);
 
-  function setParam(key: string, value: string | null) {
-    const next = new URLSearchParams(sp.toString());
-    if (!value) next.delete(key);
-    else next.set(key, value);
-    next.delete("page"); // ako kasnije dodaš paginaciju, resetuje se na 1
-    router.push(`/oglasi?${next.toString()}`);
-  }
+useEffect(() => {
+  setLokacija(lokacijaParam);
+}, [lokacijaParam]);
+
+ function setParam(key: string, value: string | null, replace = false) {
+  const next = new URLSearchParams(sp.toString());
+  if (!value) next.delete(key);
+  else next.set(key, value);
+  next.delete("page");
+
+  const url = `/oglasi?${next.toString()}`;
+  if (replace) router.replace(url);
+  else router.push(url);
+}
+
+useEffect(() => {
+  const t = setTimeout(() => {
+    setParam("lokacija", lokacija || null, true); // true => replace
+  }, 600);
+
+  return () => clearTimeout(t);
+}, [lokacija]); 
+
 
   return (
     <aside className="w-full md:w-72 shrink-0 mr-6 -ml-4">
@@ -44,7 +62,7 @@ export default function OglasiSidebar({ subjects }: Props) {
           placeholder="Mesto (npr. Beograd)"
           className="w-full rounded border border-gray-200 px-3 py-2"
           value={lokacija}
-          onChange={(e) => setParam("lokacija", e.target.value || null)}
+          onChange={(e) => setLokacija(e.target.value)}
         />
 
         {/* Predmeti */}
