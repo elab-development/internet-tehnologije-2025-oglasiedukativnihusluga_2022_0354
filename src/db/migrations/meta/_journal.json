@@ -1,0 +1,41 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1770328106032,
+      "tag": "0000_uneven_thunderbird",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1770435800506,
+      "tag": "0001_deep_blackheart",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1770437029216,
+      "tag": "0002_sour_forgotten_one",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1770440002819,
+      "tag": "0003_thin_slayback",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1770530327669,
+      "tag": "0004_steep_silver_sable",
+      "breakpoints": true
+    }
+  ]
+}

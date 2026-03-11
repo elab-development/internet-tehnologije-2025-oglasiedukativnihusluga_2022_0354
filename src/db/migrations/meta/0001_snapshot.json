@@ -1,0 +1,464 @@
+{
+  "id": "739168df-985d-4fff-b1c1-3c1d77b0f165",
+  "prevId": "b276c538-5c36-4e68-9c79-a9d9ff2bd5cf",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.korisnik": {
+      "name": "korisnik",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "ime": {
+          "name": "ime",
+          "type": "varchar(120)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "prezime": {
+          "name": "prezime",
+          "type": "varchar(120)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "lozinka": {
+          "name": "lozinka",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "uloga": {
+          "name": "uloga",
+          "type": "uloga",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'KORISNIK'"
+        },
+        "datumRegistracije": {
+          "name": "datumRegistracije",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "blokiran": {
+          "name": "blokiran",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "korisnik_email_unique": {
+          "name": "korisnik_email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "email"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.oglas": {
+      "name": "oglas",
+      "schema": "",
+      "columns": {
+        "idOglas": {
+          "name": "idOglas",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "predmetId": {
+          "name": "predmetId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tutorId": {
+          "name": "tutorId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "naslov": {
+          "name": "naslov",
+          "type": "varchar(160)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "opis": {
+          "name": "opis",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "lokacija": {
+          "name": "lokacija",
+          "type": "varchar(120)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nacinIzvodjenja": {
+          "name": "nacinIzvodjenja",
+          "type": "nacinIzvodjenja",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'ONLINE'"
+        },
+        "cena": {
+          "name": "cena",
+          "type": "numeric(10, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "datumKreiranja": {
+          "name": "datumKreiranja",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "odobren": {
+          "name": "odobren",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "oglas_predmetId_predmet_id_fk": {
+          "name": "oglas_predmetId_predmet_id_fk",
+          "tableFrom": "oglas",
+          "tableTo": "predmet",
+          "columnsFrom": [
+            "predmetId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "oglas_tutorId_tutor_idT_fk": {
+          "name": "oglas_tutorId_tutor_idT_fk",
+          "tableFrom": "oglas",
+          "tableTo": "tutor",
+          "columnsFrom": [
+            "tutorId"
+          ],
+          "columnsTo": [
+            "idT"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.predmet": {
+      "name": "predmet",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "nazivPredmeta": {
+          "name": "nazivPredmeta",
+          "type": "varchar(80)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.prijava": {
+      "name": "prijava",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "razlog": {
+          "name": "razlog",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "datum": {
+          "name": "datum",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "korisnikId": {
+          "name": "korisnikId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "oglasId": {
+          "name": "oglasId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "prijava_korisnikId_korisnik_id_fk": {
+          "name": "prijava_korisnikId_korisnik_id_fk",
+          "tableFrom": "prijava",
+          "tableTo": "korisnik",
+          "columnsFrom": [
+            "korisnikId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "prijava_oglasId_oglas_idOglas_fk": {
+          "name": "prijava_oglasId_oglas_idOglas_fk",
+          "tableFrom": "prijava",
+          "tableTo": "oglas",
+          "columnsFrom": [
+            "oglasId"
+          ],
+          "columnsTo": [
+            "idOglas"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.recenzija": {
+      "name": "recenzija",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "tutorId": {
+          "name": "tutorId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "autorId": {
+          "name": "autorId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ocena": {
+          "name": "ocena",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "komentar": {
+          "name": "komentar",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "datum": {
+          "name": "datum",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "recenzija_tutorId_tutor_idT_fk": {
+          "name": "recenzija_tutorId_tutor_idT_fk",
+          "tableFrom": "recenzija",
+          "tableTo": "tutor",
+          "columnsFrom": [
+            "tutorId"
+          ],
+          "columnsTo": [
+            "idT"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "recenzija_autorId_korisnik_id_fk": {
+          "name": "recenzija_autorId_korisnik_id_fk",
+          "tableFrom": "recenzija",
+          "tableTo": "korisnik",
+          "columnsFrom": [
+            "autorId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "recenzija_tutorId_autorId_unique": {
+          "name": "recenzija_tutorId_autorId_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "tutorId",
+            "autorId"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.tutor": {
+      "name": "tutor",
+      "schema": "",
+      "columns": {
+        "idT": {
+          "name": "idT",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "biografija": {
+          "name": "biografija",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "godineIskustva": {
+          "name": "godineIskustva",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "lokacija": {
+          "name": "lokacija",
+          "type": "varchar(120)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "telefon": {
+          "name": "telefon",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "tutor_idT_korisnik_id_fk": {
+          "name": "tutor_idT_korisnik_id_fk",
+          "tableFrom": "tutor",
+          "tableTo": "korisnik",
+          "columnsFrom": [
+            "idT"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.nacinIzvodjenja": {
+      "name": "nacinIzvodjenja",
+      "schema": "public",
+      "values": [
+        "UZIVO",
+        "ONLINE",
+        "OBA"
+      ]
+    },
+    "public.report_status": {
+      "name": "report_status",
+      "schema": "public",
+      "values": [
+        "OPEN",
+        "RESOLVED",
+        "REJECTED"
+      ]
+    },
+    "public.uloga": {
+      "name": "uloga",
+      "schema": "public",
+      "values": [
+        "ADMIN",
+        "KORISNIK",
+        "TUTOR"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
