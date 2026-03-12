@@ -6,6 +6,7 @@ import OglasCard from "../components/OglasCard";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/auth-context";
 import Link from "next/link";
+import WeatherWidget from "../components/WeatherWidget";
 
 type OglasRow = {
   id: number;
@@ -116,17 +117,16 @@ function OglasiContent() {
         <OglasiSidebar subjects={subjects} />
 
         <main className="flex-1">
+          {lokacija && (
+            <div className="mb-6">
+              <WeatherWidget city={lokacija} />
+            </div>
+          )}
           {oglasi.length === 0 ? (
             <div className="bg-white p-8 rounded-lg shadow text-center">
               <p className="text-xl text-gray-800 mb-4">Nema oglasa koji odgovaraju filterima</p>
               <p className="text-gray-600">Pokušajte sa drugim kriterijumima pretrage</p>
-              <div className="mt-6 p-4 bg-blue-50 rounded border border-blue-200">
-                <p className="text-sm text-gray-800 font-semibold mb-2">💡 Napomena:</p>
-                <p className="text-sm text-gray-700">
-                  Ako uopšte nema oglasa, pokrenite: <br/>
-                  <code className="bg-white px-2 py-1 rounded mt-2 inline-block">npm run db:seed</code>
-                </p>
-              </div>
+             
             </div>
           ) : (
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3" style={{ gridAutoRows: '1fr' }}>
@@ -161,3 +161,12 @@ export default function OglasiPage() {
     </Suspense>
   );
 }
+
+
+/*  <div className="mt-6 p-4 bg-blue-50 rounded border border-blue-200">
+                <p className="text-sm text-gray-800 font-semibold mb-2">💡 Napomena:</p>
+                <p className="text-sm text-gray-700">
+                  Ako uopšte nema oglasa, pokrenite: <br/>
+                  <code className="bg-white px-2 py-1 rounded mt-2 inline-block">npm run db:seed</code>
+                </p>
+              </div> */
