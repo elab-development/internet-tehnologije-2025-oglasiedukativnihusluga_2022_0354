@@ -45,7 +45,7 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
-  const [uloga, setUloga] = useState<"KORISNIK" | "TUTOR" | "ADMIN">("KORISNIK");
+  const [uloga, setUloga] = useState<"KORISNIK" | "TUTOR" >("KORISNIK");
 
   
 
@@ -77,7 +77,7 @@ export default function RegisterPage() {
       setToast("Uspešno ste se registrovali! Bićete preusmereni na početnu...");
 
       // Automatski redirect na početnu stranicu posle 2 sekunde
-      setTimeout(() => router.push("/"), 2000);
+      setTimeout(() => router.push("/login"), 2000);
     } catch (err) {
       console.error(err);
       setError("Došlo je do greške pri povezivanju sa serverom.");
@@ -141,12 +141,11 @@ export default function RegisterPage() {
           />
           <select
             value={uloga}
-            onChange={(e) => setUloga(e.target.value as "KORISNIK" | "TUTOR" | "ADMIN")}
+            onChange={(e) => setUloga(e.target.value as "KORISNIK" | "TUTOR" )}
             className="border-2 border-gray-400 p-3 rounded bg-white text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
             >
             <option value="KORISNIK" className="text-gray-900">Korisnik (tražim časove)</option>
             <option value="TUTOR" className="text-gray-900">Tutor (držim časove)</option>
-            <option value="ADMIN" className="text-gray-900">Administrator</option>
           </select>
           <button
             type="submit"

@@ -11,34 +11,6 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U app -d oglasiedu"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: oglas_app
-    restart: unless-stopped
-    ports:
-      - "3000:3000"
-    environment:
-      DATABASE_URL: postgresql://app:app123@db:5432/oglasiedu
-      JWT_SECRET: neki_dugacak_tajni_string_za_jwt_tokenizaciju_2024
-      CSRF_SECRET: csrf_tajni_kljuc_za_zastitu_aplikacije
-      WEATHER_API_KEY: demo
-      SMTP_HOST: smtp.gmail.com
-      SMTP_PORT: 587
-      SMTP_USER: test@example.com
-      SMTP_PASS: test_password
-      ALLOWED_ORIGIN: http://localhost:3000
-      NODE_ENV: production
-    depends_on:
-      db:
-        condition: service_healthy
 
   adminer:
     image: adminer

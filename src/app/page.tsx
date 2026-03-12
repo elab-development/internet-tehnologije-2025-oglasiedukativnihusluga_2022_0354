@@ -74,8 +74,7 @@ export default function HomePage() {
 
       {/* Desno: Clean info blocks */}
       <section className="space-y-4">
-        <div className="grid gap-3 sm:grid-cols-2">
-          <Stat value="4.8 / 5 ⭐" label="prosečna ocena korisnika" />
+        <div className="grid gap-3">
           <Stat value="< 1 min" label="prosečno vreme do prijave" />
         </div>
 
