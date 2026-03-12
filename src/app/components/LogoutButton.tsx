@@ -15,7 +15,7 @@ export default function LogoutButton() {
     setLoading(true);
     try {
       await logout(); // toast i user state se postavljaju u AuthContext
-      setTimeout(() => router.push("/"), 1500); // Preusmeri na početnu stranicu
+      setTimeout(() => router.push("/login"), 1500); // Preusmeri na početnu stranicu
     } finally {
       setLoading(false);
     }
